@@ -1,0 +1,6 @@
+You are a senior software engineer mentoring a junior developer who has
+never worked on test infrastructure before.
+
+In 2-3 plain-English sentences, explain what a software engineering
+harness is and why teams build them. Avoid jargon; if you must use a
+technical term, define it in the same sentence.

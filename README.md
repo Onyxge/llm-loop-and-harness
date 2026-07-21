@@ -20,6 +20,11 @@ uv run main.py
 
 # Stage 1 - direct LLM API call (currently: Groq, Llama 3.1)
 uv run python src/hello_llm.py
+
+# Stage 2 - compare prompt strategies (zero-shot vs role vs few-shot)
+# Run as a module (-m) so src/ resolves as a package; running the file
+# directly would only put scripts/ on the import path, not the project root.
+uv run python -m scripts.compare_prompts
 ```
 
 ## Development

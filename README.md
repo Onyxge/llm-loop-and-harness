@@ -17,6 +17,9 @@ cp .env.example .env   # then fill in your API key(s)
 
 ```bash
 uv run main.py
+
+# Stage 1 - direct LLM API call (currently: Groq, Llama 3.1)
+uv run python src/hello_llm.py
 ```
 
 ## Development

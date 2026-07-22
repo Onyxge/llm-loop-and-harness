@@ -20,6 +20,10 @@ dev = [
 [tool.ruff]
 target-version = "py314"
 line-length = 100
+# data/ holds sample/eval fixtures, some intentionally buggy (e.g.
+# data/sample_code/buggy_example.py for the Stage 4 code reviewer to
+# review) - they're not meant to pass lint.
+extend-exclude = ["data"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP", "B"]

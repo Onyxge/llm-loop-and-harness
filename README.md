@@ -27,6 +27,9 @@ uv run python -m src.hello_llm
 
 # Stage 2 - compare prompt strategies (zero-shot vs role vs few-shot)
 uv run python -m scripts.compare_prompts
+
+# Stage 4 - single-pass code reviewer
+uv run python -m src.code_reviewer data/sample_code/buggy_example.py
 ```
 
 ## Configuration

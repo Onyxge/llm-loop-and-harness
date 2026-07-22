@@ -7,7 +7,10 @@ wording changes the model's answer:
   v2 - role-prompting + audience framing + style constraints
   v3 - few-shot (one worked example before the real question)
 
-Run: uv run python scripts/compare_prompts.py
+Run: uv run python -m scripts.compare_prompts
+(must run as a module with -m so src/ resolves as a package; running
+the file directly only puts scripts/ on the import path, not the
+project root)
 """
 
 from src.hello_llm import ask_llm

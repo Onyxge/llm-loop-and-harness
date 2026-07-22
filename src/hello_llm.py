@@ -11,30 +11,19 @@ which is why you'll see it again in Stage 2+ regardless of which provider
 we're calling.
 """
 
-import os
-
 import requests
-from dotenv import load_dotenv
 
-# load_dotenv() reads the .env file in the project root and copies its
-# key=value pairs into os.environ, as if you'd `export`ed them yourself.
-# It's a no-op if a variable is already set in the real environment.
-load_dotenv()
-
-# Groq's chat completion endpoint. "chat completion" is the API shape
-# where you send a conversation (a list of role/content messages) and
-# get back the model's next message.
-GROQ_API_URL = "https://api.groq.com/openai/v1/chat/completions"
-
-# Groq hosts open-weight models rather than one proprietary model.
-# This one is small and fast - good for cheap experimentation.
-MODEL = "llama-3.1-8b-instant"
+from src.config import get_config
 
 
 def ask_llm(prompt: str) -> str:
     """Send a single user prompt to the LLM and return its text reply."""
-    api_key = os.environ.get("GROQ_API_KEY")
-    if not api_key:
+    # Read settings fresh (see get_config's docstring for why): model
+    # name, temperature, timeout, and the API key/URL all live in one
+    # place (src/config.py) instead of being hardcoded here.
+    config = get_config()
+
+    if not config.api_key:
         # Fail loudly and clearly rather than letting requests throw a
         # confusing 401 error further down.
         raise RuntimeError("GROQ_API_KEY is not set. Copy .env.example to .env and add your key.")
@@ -43,21 +32,24 @@ def ask_llm(prompt: str) -> str:
     # "messages" models a conversation: each entry has a role (who is
     # speaking: system/user/assistant) and content (what they said).
     # We only send one "user" message here, so there's no prior history.
+    # "temperature" controls randomness: 0 is near-deterministic and
+    # repetitive, higher values (up to ~2) are more varied/creative.
     payload = {
-        "model": MODEL,
+        "model": config.model,
         "messages": [
             {"role": "user", "content": prompt},
         ],
+        "temperature": config.temperature,
     }
 
     # Bearer token auth: the API key goes in the Authorization header,
     # not in the URL or body. This is standard for almost every LLM API.
     headers = {
-        "Authorization": f"Bearer {api_key}",
+        "Authorization": f"Bearer {config.api_key}",
         "Content-Type": "application/json",
     }
 
-    response = requests.post(GROQ_API_URL, headers=headers, json=payload, timeout=30)
+    response = requests.post(config.api_url, headers=headers, json=payload, timeout=config.timeout)
 
     # raise_for_status() turns a bad HTTP status (4xx/5xx) into a Python
     # exception immediately, instead of silently continuing with a

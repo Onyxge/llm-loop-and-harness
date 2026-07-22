@@ -19,13 +19,29 @@ cp .env.example .env   # then fill in your API key(s)
 uv run main.py
 
 # Stage 1 - direct LLM API call (currently: Groq, Llama 3.1)
-uv run python src/hello_llm.py
+# Stage 2/3 - compare_prompts and hello_llm both import from src/, so
+# run everything as a module (-m). Running a .py file directly only
+# puts its own folder on the import path, not the project root, which
+# breaks `from src...` imports.
+uv run python -m src.hello_llm
 
 # Stage 2 - compare prompt strategies (zero-shot vs role vs few-shot)
-# Run as a module (-m) so src/ resolves as a package; running the file
-# directly would only put scripts/ on the import path, not the project root.
 uv run python -m scripts.compare_prompts
 ```
+
+## Configuration
+
+Stage 3 centralizes all tunable LLM settings in [src/config.py](src/config.py).
+Every setting has a default but can be overridden via environment
+variable (in `.env` or the shell) without touching code:
+
+| Env var            | Default                                          | Meaning                          |
+|--------------------|---------------------------------------------------|-----------------------------------|
+| `GROQ_API_KEY`     | *(required)*                                       | Groq API key                     |
+| `GROQ_API_URL`     | `https://api.groq.com/openai/v1/chat/completions`  | Chat completions endpoint        |
+| `GROQ_MODEL`       | `llama-3.1-8b-instant`                            | Which model to call               |
+| `GROQ_TEMPERATURE` | `0.7`                                              | 0 = deterministic, higher = more varied |
+| `GROQ_TIMEOUT`     | `30`                                               | HTTP request timeout, in seconds  |
 
 ## Development
 

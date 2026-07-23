@@ -2,7 +2,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from src.hello_llm import ask_llm
+from src.llm_client import ask_llm
 
 
 def test_ask_llm_parses_response(monkeypatch):
@@ -20,7 +20,7 @@ def test_ask_llm_parses_response(monkeypatch):
 
     # patch() swaps out requests.post for the duration of this "with"
     # block, so no real network call happens.
-    with patch("src.hello_llm.requests.post", return_value=fake_response) as mock_post:
+    with patch("src.llm_client.requests.post", return_value=fake_response) as mock_post:
         result = ask_llm("what is a harness?")
 
     assert result == "a harness runs and grades your agent"

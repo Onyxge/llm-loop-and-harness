@@ -1,7 +1,7 @@
 """Stage 3 - Configuration.
 
 Model name, temperature, timeout, and the API URL used to be literals
-hardcoded inside hello_llm.py. That meant changing which model you use,
+hardcoded inside the LLM client module. That meant changing which model you use,
 or how creative it is, required editing application code. Centralizing
 them here means:
   - one place to look when you want to tune behavior
@@ -37,7 +37,7 @@ def get_config() -> Config:
     fresh every time instead of being read once and cached. That
     matters for two reasons: it picks up .env changes without
     restarting anything, and it's what makes the tests in
-    test_hello_llm.py work - monkeypatch.setenv/delenv only has an
+    test_llm_client.py work - monkeypatch.setenv/delenv only has an
     effect on code that reads os.environ *after* the patch is applied.
     """
     return Config(

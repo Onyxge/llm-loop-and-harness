@@ -1,16 +1,17 @@
 """Stage 4 - Code Reviewer v1.
 
-The first real "product" built on top of Stages 1-3: read a source
-file, ask the LLM to review it, print the result. This is deliberately
+The first real "product" built on top of Stages 1-3: given a source
+file's contents, ask the LLM to review it. This is deliberately
 single-pass - one prompt in, one review out, no back-and-forth. Stage 6
 (Loop Engineering) is where we add a Review -> Critique -> Improve ->
 Judge cycle on top of this; this version is the simple foundation that
 loop will wrap around.
+
+Pure library code, no CLI here (see Stage 5's refactor note in
+llm_client.py) - the runnable entrypoint is scripts/review.py.
 """
 
-import sys
-
-from src.hello_llm import ask_llm
+from src.llm_client import ask_llm
 from src.prompts import load_prompt
 
 TASK = "code_review"
@@ -34,20 +35,3 @@ def review_code(code: str, version: str = "v1") -> str:
     """Send code to the LLM for review and return its written review."""
     prompt = build_review_prompt(code, version)
     return ask_llm(prompt)
-
-
-def main():
-    if len(sys.argv) != 2:
-        print("Usage: uv run python -m src.code_reviewer <path-to-file>")
-        sys.exit(1)
-
-    path = sys.argv[1]
-    with open(path, encoding="utf-8") as f:
-        code = f.read()
-
-    review = review_code(code)
-    print(review)
-
-
-if __name__ == "__main__":
-    main()

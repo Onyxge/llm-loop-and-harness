@@ -18,18 +18,18 @@ cp .env.example .env   # then fill in your API key(s)
 ```bash
 uv run main.py
 
+# Everything below imports from src/, so run it as a module (-m).
+# Running a .py file directly only puts its own folder on the import
+# path, not the project root, which breaks `from src...` imports.
+
 # Stage 1 - direct LLM API call (currently: Groq, Llama 3.1)
-# Stage 2/3 - compare_prompts and hello_llm both import from src/, so
-# run everything as a module (-m). Running a .py file directly only
-# puts its own folder on the import path, not the project root, which
-# breaks `from src...` imports.
-uv run python -m src.hello_llm
+uv run python -m scripts.hello_llm
 
 # Stage 2 - compare prompt strategies (zero-shot vs role vs few-shot)
 uv run python -m scripts.compare_prompts
 
 # Stage 4 - single-pass code reviewer
-uv run python -m src.code_reviewer data/sample_code/buggy_example.py
+uv run python -m scripts.review data/sample_code/buggy_example.py
 ```
 
 ## Configuration
@@ -57,10 +57,14 @@ uv run pytest            # tests
 ## Project structure
 
 ```
-src/       application source code
+src/       importable library code - no CLI, no side effects besides
+           the documented ones (e.g. ask_llm's HTTP call). Anything
+           here should be safe to import from a test, a script, or
+           another module without triggering a demo run.
+scripts/   CLI entrypoints - argv parsing, printing, sys.exit. Thin:
+           they call into src/ and do no real logic themselves.
 tests/     automated tests
 prompts/   versioned prompt assets (kept outside Python code)
 docs/      design notes and reflections per stage
 data/      sample/evaluation data
-scripts/   one-off developer scripts
 ```

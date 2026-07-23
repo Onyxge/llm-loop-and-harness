@@ -1,14 +1,19 @@
-"""Stage 1 - Core LLM.
+"""Stage 1/5 - LLM client.
 
-The goal here is to see exactly what an LLM API call looks like on the
-wire, with nothing hiding it: no SDK, no framework. Just an HTTP POST
-with a JSON body, and a JSON response we parse ourselves.
+This started life as Stage 1's hello_llm.py tutorial script. By Stage 4
+it had become genuine shared infrastructure - both code_reviewer.py and
+compare_prompts.py depend on ask_llm(). Stage 5's architecture refactor
+renamed it and moved its old CLI demo out to scripts/hello_llm.py: this
+file is now pure library code (no side effects besides the one
+documented HTTP call, no `if __name__`), so anything can import
+ask_llm() without dragging along a demo entrypoint.
 
-Groq exposes an "OpenAI-compatible" endpoint, meaning the request/response
-shape follows the same convention OpenAI popularized (a `messages` list,
-a `choices` list in the response, etc). Many providers copy this shape,
-which is why you'll see it again in Stage 2+ regardless of which provider
-we're calling.
+The call itself is still a raw HTTP POST with nothing hiding it: no
+SDK, no framework. Groq exposes an "OpenAI-compatible" endpoint,
+meaning the request/response shape follows the same convention OpenAI
+popularized (a `messages` list, a `choices` list in the response,
+etc). Many providers copy this shape, which is why it keeps showing up
+regardless of which provider we're calling.
 """
 
 import requests
@@ -62,12 +67,3 @@ def ask_llm(prompt: str) -> str:
     # "choices" is plural because you can ask for multiple candidate
     # replies at once (we didn't, so there's exactly one).
     return data["choices"][0]["message"]["content"]
-
-
-def main():
-    reply = ask_llm("In one sentence, what is a software engineering harness?")
-    print(reply)
-
-
-if __name__ == "__main__":
-    main()
